@@ -17,7 +17,7 @@ cd FFmpeg
 ########################################
 echo "📱 Building for iOS device..."
 
-if [ -f "Makefile" ]; then
+if [ -f "ffbuild/config.mak" ]; then
   make distclean
 fi
 
@@ -59,7 +59,7 @@ make install
 ########################################
 echo "🖥 Building for iOS simulator..."
 
-if [ -f "Makefile" ]; then
+if [ -f "ffbuild/config.mak" ]; then
   make distclean
 fi
 
