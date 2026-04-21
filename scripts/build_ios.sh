@@ -58,7 +58,7 @@ echo "🖥 Building for iOS simulator..."
 
 make distclean || true
 
-ARCH=x86_64
+ARCH=arm64
 PLATFORM=iphonesimulator
 SDK=$(xcrun --sdk $PLATFORM --show-sdk-path)
 
