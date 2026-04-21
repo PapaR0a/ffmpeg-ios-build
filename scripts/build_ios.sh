@@ -124,18 +124,54 @@ build/sim/lib/libswresample.a \
 build/sim/lib/libswscale.a
 
 ########################################
-# CREATE FRAMEWORKS (CRITICAL FIX)
+# CREATE FRAMEWORKS (REAL FIX)
 ########################################
-echo "📦 Creating temporary frameworks..."
+echo "📦 Creating proper frameworks..."
 
 mkdir -p build/frameworks/device/FFmpeg.framework
 mkdir -p build/frameworks/sim/FFmpeg.framework
 
-# Device framework
+# Copy binaries
 cp build/unified/libffmpeg_device.a build/frameworks/device/FFmpeg.framework/FFmpeg
-
-# Simulator framework
 cp build/unified/libffmpeg_sim.a build/frameworks/sim/FFmpeg.framework/FFmpeg
+
+# Create Info.plist for device
+cat > build/frameworks/device/FFmpeg.framework/Info.plist <<EOF
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN"
+"http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>CFBundleName</key>
+    <string>FFmpeg</string>
+    <key>CFBundleIdentifier</key>
+    <string>com.ffmpeg.device</string>
+    <key>CFBundleVersion</key>
+    <string>1.0</string>
+    <key>CFBundlePackageType</key>
+    <string>FMWK</string>
+</dict>
+</plist>
+EOF
+
+# Create Info.plist for simulator
+cat > build/frameworks/sim/FFmpeg.framework/Info.plist <<EOF
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN"
+"http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>CFBundleName</key>
+    <string>FFmpeg</string>
+    <key>CFBundleIdentifier</key>
+    <string>com.ffmpeg.sim</string>
+    <key>CFBundleVersion</key>
+    <string>1.0</string>
+    <key>CFBundlePackageType</key>
+    <string>FMWK</string>
+</dict>
+</plist>
+EOF
 
 ########################################
 # CREATE XCFRAMEWORK (FINAL)
