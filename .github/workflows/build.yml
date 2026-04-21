@@ -1,0 +1,24 @@
+name: Build FFmpeg iOS
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: macos-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Make script executable
+        run: chmod +x scripts/build_ios.sh
+
+      - name: Run build
+        run: ./scripts/build_ios.sh
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ffmpeg-ios
+          path: ffmpeg.xcframework
