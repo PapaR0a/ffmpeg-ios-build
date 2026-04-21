@@ -12,11 +12,13 @@ fi
 
 cd FFmpeg
 
+########################################
+# DEVICE BUILD (arm64)
+########################################
+echo "📱 Building for iOS device..."
+
 make distclean || true
 
-########################################
-# DEVICE BUILD
-########################################
 ARCH=arm64
 PLATFORM=iphoneos
 SDK=$(xcrun --sdk $PLATFORM --show-sdk-path)
@@ -49,12 +51,14 @@ SDK=$(xcrun --sdk $PLATFORM --show-sdk-path)
 make -j8
 make install
 
-make distclean
+########################################
+# SIMULATOR BUILD (x86_64 - safer)
+########################################
+echo "🖥 Building for iOS simulator..."
 
-########################################
-# SIMULATOR BUILD
-########################################
-ARCH=arm64
+make distclean || true
+
+ARCH=x86_64
 PLATFORM=iphonesimulator
 SDK=$(xcrun --sdk $PLATFORM --show-sdk-path)
 
@@ -87,8 +91,18 @@ make -j8
 make install
 
 ########################################
+# VERIFY OUTPUT
+########################################
+echo "🔍 Verifying build output..."
+
+ls build/device/lib || true
+ls build/sim/lib || true
+
+########################################
 # CREATE XCFRAMEWORK
 ########################################
+echo "📦 Creating xcframework..."
+
 cd ..
 
 xcodebuild -create-xcframework \
