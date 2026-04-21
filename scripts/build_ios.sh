@@ -33,7 +33,7 @@ SDK=$(xcrun --sdk $PLATFORM --show-sdk-path)
 --cc="$(xcrun --sdk $PLATFORM -f clang)" \
 --sysroot=$SDK \
 --extra-cflags="-arch arm64 -isysroot $SDK -mios-version-min=11.0" \
---extra-ldflags="-arch arm64 -isysroot $SDK -mios-version-min=11.0"
+--extra-ldflags="-arch arm64 -isysroot $SDK -mios-version-min=11.0" \
 --disable-debug \
 --disable-doc \
 --disable-programs \
@@ -75,7 +75,7 @@ SDK=$(xcrun --sdk $PLATFORM --show-sdk-path)
 --cc="$(xcrun --sdk $PLATFORM -f clang)" \
 --sysroot=$SDK \
 --extra-cflags="-arch arm64 -isysroot $SDK -mios-simulator-version-min=11.0" \
---extra-ldflags="-arch arm64 -isysroot $SDK -mios-simulator-version-min=11.0"
+--extra-ldflags="-arch arm64 -isysroot $SDK -mios-simulator-version-min=11.0" \
 --disable-debug \
 --disable-doc \
 --disable-programs \
