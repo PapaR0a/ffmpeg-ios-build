@@ -103,7 +103,11 @@ ls build/sim/lib || true
 ########################################
 echo "🔗 Merging libraries..."
 
-mkdir -p build/unified
+mkdir -p build/ios-device
+mkdir -p build/ios-sim
+
+cp build/unified/libffmpeg_device.a build/ios-device/
+cp build/unified/libffmpeg_sim.a build/ios-sim/
 
 # Device
 libtool -static -o build/unified/libffmpeg_device.a \
@@ -122,15 +126,15 @@ build/sim/lib/libswresample.a \
 build/sim/lib/libswscale.a
 
 ########################################
-# CREATE XCFRAMEWORK
+# CREATE XCFRAMEWORK (FIXED)
 ########################################
 echo "📦 Creating xcframework..."
 
 cd ..
 
 xcodebuild -create-xcframework \
--library FFmpeg/build/unified/libffmpeg_device.a \
--library FFmpeg/build/unified/libffmpeg_sim.a \
+-library FFmpeg/build/ios-device/libffmpeg_device.a \
+-library FFmpeg/build/ios-sim/libffmpeg_sim.a \
 -output ffmpeg.xcframework
 
 echo "✅ Build complete!"
