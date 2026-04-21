@@ -46,13 +46,14 @@ SDK=$(xcrun --sdk $PLATFORM --show-sdk-path)
 --enable-avformat \
 --enable-avcodec \
 --enable-avutil \
---enable-swresample
+--enable-swresample \
+--enable-swscale
 
 make -j8
 make install
 
 ########################################
-# SIMULATOR BUILD (x86_64 - safer)
+# SIMULATOR BUILD (arm64)
 ########################################
 echo "🖥 Building for iOS simulator..."
 
@@ -85,7 +86,8 @@ SDK=$(xcrun --sdk $PLATFORM --show-sdk-path)
 --enable-avformat \
 --enable-avcodec \
 --enable-avutil \
---enable-swresample
+--enable-swresample \
+--enable-swscale
 
 make -j8
 make install
@@ -99,7 +101,7 @@ ls build/device/lib || true
 ls build/sim/lib || true
 
 ########################################
-# MERGE LIBRARIES (FIXED ORDER)
+# MERGE LIBRARIES
 ########################################
 echo "🔗 Merging libraries..."
 
@@ -122,17 +124,29 @@ build/sim/lib/libswresample.a \
 build/sim/lib/libswscale.a
 
 ########################################
-# CREATE XCFRAMEWORK (FINAL FIX)
+# CREATE FRAMEWORKS (CRITICAL FIX)
+########################################
+echo "📦 Creating temporary frameworks..."
+
+mkdir -p build/frameworks/device/FFmpeg.framework
+mkdir -p build/frameworks/sim/FFmpeg.framework
+
+# Device framework
+cp build/unified/libffmpeg_device.a build/frameworks/device/FFmpeg.framework/FFmpeg
+
+# Simulator framework
+cp build/unified/libffmpeg_sim.a build/frameworks/sim/FFmpeg.framework/FFmpeg
+
+########################################
+# CREATE XCFRAMEWORK (FINAL)
 ########################################
 echo "📦 Creating xcframework..."
 
 cd ..
 
 xcodebuild -create-xcframework \
--library FFmpeg/build/unified/libffmpeg_device.a \
--headers FFmpeg \
--library FFmpeg/build/unified/libffmpeg_sim.a \
--headers FFmpeg \
+-framework FFmpeg/build/frameworks/device/FFmpeg.framework \
+-framework FFmpeg/build/frameworks/sim/FFmpeg.framework \
 -output ffmpeg.xcframework
 
 echo "✅ Build complete!"
