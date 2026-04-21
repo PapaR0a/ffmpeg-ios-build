@@ -28,12 +28,12 @@ SDK=$(xcrun --sdk $PLATFORM --show-sdk-path)
 ./configure \
 --prefix=$(pwd)/build/device \
 --target-os=darwin \
---arch=$ARCH \
+--arch=arm64 \
 --enable-cross-compile \
 --cc="$(xcrun --sdk $PLATFORM -f clang)" \
 --sysroot=$SDK \
---extra-cflags="-arch $ARCH -mios-version-min=11.0" \
---extra-ldflags="-arch $ARCH -mios-version-min=11.0" \
+--extra-cflags="-arch arm64 -isysroot $SDK -mios-version-min=11.0" \
+--extra-ldflags="-arch arm64 -isysroot $SDK -mios-version-min=11.0"
 --disable-debug \
 --disable-doc \
 --disable-programs \
@@ -74,8 +74,8 @@ SDK=$(xcrun --sdk $PLATFORM --show-sdk-path)
 --enable-cross-compile \
 --cc="$(xcrun --sdk $PLATFORM -f clang)" \
 --sysroot=$SDK \
---extra-cflags="-arch $ARCH -mios-version-min=11.0" \
---extra-ldflags="-arch $ARCH -mios-version-min=11.0" \
+--extra-cflags="-arch arm64 -isysroot $SDK -mios-simulator-version-min=11.0" \
+--extra-ldflags="-arch arm64 -isysroot $SDK -mios-simulator-version-min=11.0"
 --disable-debug \
 --disable-doc \
 --disable-programs \
@@ -128,65 +128,19 @@ build/sim/lib/libswresample.a \
 build/sim/lib/libswscale.a
 
 ########################################
-# CREATE FRAMEWORKS (REAL FIX)
-########################################
-echo "📦 Creating proper frameworks..."
-
-mkdir -p build/frameworks/device/FFmpeg.framework
-mkdir -p build/frameworks/sim/FFmpeg.framework
-
-# Copy binaries
-cp build/unified/libffmpeg_device.a build/frameworks/device/FFmpeg.framework/FFmpeg
-cp build/unified/libffmpeg_sim.a build/frameworks/sim/FFmpeg.framework/FFmpeg
-
-# Create Info.plist for device
-cat > build/frameworks/device/FFmpeg.framework/Info.plist <<EOF
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN"
-"http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-<plist version="1.0">
-<dict>
-    <key>CFBundleName</key>
-    <string>FFmpeg</string>
-    <key>CFBundleIdentifier</key>
-    <string>com.ffmpeg.device</string>
-    <key>CFBundleVersion</key>
-    <string>1.0</string>
-    <key>CFBundlePackageType</key>
-    <string>FMWK</string>
-</dict>
-</plist>
-EOF
-
-# Create Info.plist for simulator
-cat > build/frameworks/sim/FFmpeg.framework/Info.plist <<EOF
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN"
-"http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-<plist version="1.0">
-<dict>
-    <key>CFBundleName</key>
-    <string>FFmpeg</string>
-    <key>CFBundleIdentifier</key>
-    <string>com.ffmpeg.sim</string>
-    <key>CFBundleVersion</key>
-    <string>1.0</string>
-    <key>CFBundlePackageType</key>
-    <string>FMWK</string>
-</dict>
-</plist>
-EOF
-
-########################################
-# CREATE XCFRAMEWORK (FINAL)
+# CREATE XCFRAMEWORK (FINAL WORKING)
 ########################################
 echo "📦 Creating xcframework..."
 
 cd ..
 
 xcodebuild -create-xcframework \
--framework FFmpeg/build/frameworks/device/FFmpeg.framework \
--framework FFmpeg/build/frameworks/sim/FFmpeg.framework \
+-library FFmpeg/build/unified/libffmpeg_device.a \
+-headers FFmpeg \
+-library FFmpeg/build/unified/libffmpeg_sim.a \
+-headers FFmpeg \
 -output ffmpeg.xcframework
+
+echo "✅ Build complete!"
 
 echo "✅ Build complete!"
