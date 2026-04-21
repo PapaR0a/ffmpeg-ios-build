@@ -17,7 +17,9 @@ cd FFmpeg
 ########################################
 echo "📱 Building for iOS device..."
 
-make distclean || true
+if [ -f "Makefile" ]; then
+  make distclean
+fi
 
 ARCH=arm64
 PLATFORM=iphoneos
@@ -57,7 +59,9 @@ make install
 ########################################
 echo "🖥 Building for iOS simulator..."
 
-make distclean || true
+if [ -f "Makefile" ]; then
+  make distclean
+fi
 
 ARCH=arm64
 PLATFORM=iphonesimulator
