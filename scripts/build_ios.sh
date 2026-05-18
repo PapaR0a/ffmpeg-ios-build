@@ -51,15 +51,12 @@ SDK=$(xcrun --sdk $PLATFORM --show-sdk-path)
 --enable-decoder=h264,aac \
 --enable-encoder=aac \
 --enable-parser=h264,aac \
---enable-filter=subtitles \
 --enable-filter=scale \
 --enable-filter=aresample \
 --enable-filter=format \
 --enable-filter=fps \
 --enable-filter=overlay \
 --enable-filter=transpose \
---enable-libass \
---enable-libfreetype
 
 make -j8
 make install
