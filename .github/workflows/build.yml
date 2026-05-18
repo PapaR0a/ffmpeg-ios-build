@@ -11,6 +11,10 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v4
 
+      - name: Install dependencies
+        run: |
+          brew install nasm yasm pkg-config freetype libass
+
       - name: Make script executable
         run: chmod +x scripts/build_ios.sh
 
