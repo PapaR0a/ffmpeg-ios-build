@@ -56,7 +56,7 @@ SDK=$(xcrun --sdk $PLATFORM --show-sdk-path)
 --enable-filter=format \
 --enable-filter=fps \
 --enable-filter=overlay \
---enable-filter=transpose \
+--enable-filter=transpose
 
 make -j8
 make install
@@ -67,6 +67,10 @@ make install
 echo "🔍 Verifying build output..."
 
 ls build/device/lib || true
+
+echo "🔍 Checking fftools objects..."
+
+find fftools -name "*.o" || true
 
 ########################################
 # MERGE LIBRARIES
@@ -82,7 +86,9 @@ build/device/lib/libavformat.a \
 build/device/lib/libavfilter.a \
 build/device/lib/libavutil.a \
 build/device/lib/libswresample.a \
-build/device/lib/libswscale.a
+build/device/lib/libswscale.a \
+fftools/ffmpeg.o \
+fftools/cmdutils.o
 
 ########################################
 # CREATE XCFRAMEWORK (FINAL WORKING)
