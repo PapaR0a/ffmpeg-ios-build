@@ -645,7 +645,6 @@ echo "============================================================"
     --enable-avcodec \
     --enable-avfilter \
     --enable-swresample \
-    --enable-swscale \
     --enable-avutil \
     \
     --enable-protocol=file \
@@ -659,7 +658,6 @@ echo "============================================================"
     \
     --enable-filter=ass \
     --enable-filter=subtitles \
-    --enable-filter=scale \
     --enable-filter=aresample \
     --enable-filter=format \
     --enable-filter=fps \
