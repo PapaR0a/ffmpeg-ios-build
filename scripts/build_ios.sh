@@ -221,6 +221,57 @@ checkout_repo \
 
 echo ""
 echo "============================================================"
+echo " Patching FriBidi native compiler support"
+echo "============================================================"
+
+python3 - "$DEPS_DIR/fribidi/meson.build" <<'PY2'
+import sys
+from pathlib import Path
+
+path = Path(sys.argv[1])
+text = path.read_text()
+
+marker = "project('fribidi', 'c', version: '1.0.16',"
+
+if "add_languages('c', native: true)" in text:
+    print("FriBidi native C language support already present.")
+    sys.exit(0)
+
+if marker not in text:
+    raise SystemExit(
+        "ERROR: Could not find FriBidi project declaration."
+    )
+
+text = text.replace(
+    marker,
+    marker,
+    1
+)
+
+project_end = "  meson_version : '>= 0.54')"
+
+if project_end not in text:
+    raise SystemExit(
+        "ERROR: Could not find end of FriBidi project declaration."
+    )
+
+text = text.replace(
+    project_end,
+    project_end + "\n\nadd_languages('c', native: true)",
+    1
+)
+
+path.write_text(text)
+
+print("FriBidi native C language support added.")
+PY2
+
+echo ""
+echo "FriBidi project declaration:"
+sed -n '1,30p' "$DEPS_DIR/fribidi/meson.build"
+
+echo ""
+echo "============================================================"
 echo " Patching FriBidi native compiler detection"
 echo "============================================================"
 
