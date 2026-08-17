@@ -170,10 +170,16 @@ cd "$DEPS_DIR/freetype"
 
 make distclean >/dev/null 2>&1 || true
 
+CC_BUILD="$(xcrun --sdk macosx -f clang)"
+CFLAGS_BUILD="-O2"
+
 ./configure \
     --build="$(uname -m)-apple-darwin" \
     --host=arm-apple-darwin \
     --prefix="$INSTALL_DIR" \
+    CC="$CC" \
+    CC_BUILD="$CC_BUILD" \
+    CFLAGS_BUILD="$CFLAGS_BUILD" \
     --enable-static \
     --disable-shared \
     --without-zlib \
