@@ -220,28 +220,11 @@ checkout_repo \
     "v1.0.16"
 
 echo ""
-echo "Inspecting FriBidi Meson generator targets..."
-
-echo ""
 echo "============================================================"
-echo " FriBidi gen.tab/meson.build"
+echo " FriBidi generator source"
 echo "============================================================"
 
-cat "$DEPS_DIR/fribidi/gen.tab/meson.build"
-
-echo ""
-echo "============================================================"
-echo " FriBidi generator targets"
-echo "============================================================"
-
-grep -n -A15 -B5 \
-    -E "executable|gen-unicode|packtab|native" \
-    "$DEPS_DIR/fribidi/gen.tab/meson.build"
-
-echo ""
-echo "FriBidi generator definitions:"
-grep -n -A8 -B2 "native: true" \
-    "$DEPS_DIR/fribidi/gen.tab/meson.build"
+sed -n '20,90p' "$DEPS_DIR/fribidi/gen.tab/meson.build"
 
 FRIBIDI_DIR="$DEPS_DIR/fribidi"
 FRIBIDI_BUILD="$FRIBIDI_DIR/build-ios"
