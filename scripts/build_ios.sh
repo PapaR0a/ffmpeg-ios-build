@@ -166,6 +166,8 @@ checkout_repo \
 
 cd "$DEPS_DIR/freetype"
 
+./autogen.sh
+
 make distclean >/dev/null 2>&1 || true
 
 ./configure \
