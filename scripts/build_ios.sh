@@ -231,7 +231,7 @@ cpp = '$CXX'
 ar = '$AR'
 strip = '$STRIP'
 ranlib = '$RANLIB'
-pkgconfig = '$(which pkg-config)'
+pkg-config = '$(which pkg-config)'
 
 [host_machine]
 system = 'darwin'
@@ -249,9 +249,20 @@ c_link_args = ['-arch', '$ARCH', '-isysroot', '$SDK', '-miphoneos-version-min=$M
 cpp_link_args = ['-arch', '$ARCH', '-isysroot', '$SDK', '-miphoneos-version-min=$MIN_IOS_VERSION']
 EOF
 
+cat > "$DEPS_DIR/fribidi-native.ini" <<EOF
+[binaries]
+c = '$(xcrun --sdk macosx -f clang)'
+cpp = '$(xcrun --sdk macosx -f clang++)'
+ar = '$(xcrun --sdk macosx -f ar)'
+strip = '$(xcrun --sdk macosx -f strip)'
+ranlib = '$(xcrun --sdk macosx -f ranlib)'
+pkg-config = '$(which pkg-config)'
+EOF
+
 meson setup "$FRIBIDI_BUILD" \
     "$FRIBIDI_DIR" \
     --cross-file "$DEPS_DIR/fribidi-ios.ini" \
+    --native-file "$DEPS_DIR/fribidi-native.ini" \
     --prefix="$INSTALL_DIR" \
     --libdir=lib \
     -Ddefault_library=static \
@@ -295,7 +306,7 @@ cpp = '$CXX'
 ar = '$AR'
 strip = '$STRIP'
 ranlib = '$RANLIB'
-pkgconfig = '$(which pkg-config)'
+pkg-config = '$(which pkg-config)'
 
 [host_machine]
 system = 'darwin'
@@ -313,9 +324,20 @@ c_link_args = ['-arch', '$ARCH', '-isysroot', '$SDK', '-miphoneos-version-min=$M
 cpp_link_args = ['-arch', '$ARCH', '-isysroot', '$SDK', '-miphoneos-version-min=$MIN_IOS_VERSION', '-L$INSTALL_DIR/lib']
 EOF
 
+cat > "$DEPS_DIR/harfbuzz-native.ini" <<EOF
+[binaries]
+c = '$(xcrun --sdk macosx -f clang)'
+cpp = '$(xcrun --sdk macosx -f clang++)'
+ar = '$(xcrun --sdk macosx -f ar)'
+strip = '$(xcrun --sdk macosx -f strip)'
+ranlib = '$(xcrun --sdk macosx -f ranlib)'
+pkg-config = '$(which pkg-config)'
+EOF
+
 meson setup "$HARFBUZZ_BUILD" \
     "$DEPS_DIR/harfbuzz" \
     --cross-file "$DEPS_DIR/harfbuzz-ios.ini" \
+    --native-file "$DEPS_DIR/harfbuzz-native.ini" \
     --prefix="$INSTALL_DIR" \
     --libdir=lib \
     -Ddefault_library=static \
@@ -359,6 +381,12 @@ cd "$DEPS_DIR/libass"
 
 make distclean >/dev/null 2>&1 || true
 
+export PKG_CONFIG_PATH="$INSTALL_DIR/lib/pkgconfig"
+export PKG_CONFIG_LIBDIR="$INSTALL_DIR/lib/pkgconfig"
+
+CPPFLAGS="-I$INSTALL_DIR/include" \
+CFLAGS="$CFLAGS -I$INSTALL_DIR/include" \
+LDFLAGS="$LDFLAGS -L$INSTALL_DIR/lib" \
 ./configure \
     --build="$(uname -m)-apple-darwin" \
     --host=arm-apple-darwin \
@@ -388,13 +416,21 @@ echo "============================================================"
 echo " Verifying libass dependency chain"
 echo "============================================================"
 
-pkg-config --modversion libass
-pkg-config --modversion freetype2
-pkg-config --modversion fribidi
-pkg-config --modversion harfbuzz
+echo ""
+echo "Installed libraries:"
+ls -lh "$INSTALL_DIR/lib"/libfreetype.a
+ls -lh "$INSTALL_DIR/lib"/libfribidi.a
+ls -lh "$INSTALL_DIR/lib"/libharfbuzz.a
+ls -lh "$INSTALL_DIR/lib"/libass.a
+
+echo ""
+echo "Installed pkg-config files:"
+ls -lh "$INSTALL_DIR/lib/pkgconfig"/
 
 echo ""
 echo "libass linker flags:"
+PKG_CONFIG_PATH="$INSTALL_DIR/lib/pkgconfig" \
+PKG_CONFIG_LIBDIR="$INSTALL_DIR/lib/pkgconfig" \
 pkg-config --static --libs libass
 
 # ============================================================
