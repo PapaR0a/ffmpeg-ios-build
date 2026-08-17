@@ -292,6 +292,12 @@ ar = '$HOST_AR'
 strip = '$HOST_STRIP'
 ranlib = '$HOST_RANLIB'
 pkg-config = '$HOST_PKG_CONFIG'
+
+[host_machine]
+system = 'darwin'
+cpu_family = 'aarch64'
+cpu = 'arm64'
+endian = 'little'
 EOF
 
 echo ""
@@ -341,6 +347,25 @@ echo 'int main(void) { return 0; }' > "$DEPS_DIR/native-test.c"
 "$DEPS_DIR/native-test"
 
 echo "Native compiler executable test: OK"
+
+echo ""
+echo "============================================================"
+echo " Meson version and machine files"
+echo "============================================================"
+
+meson --version
+
+echo ""
+echo "=== FRIBIDI IOS CROSS FILE ==="
+cat "$DEPS_DIR/fribidi-ios.ini"
+
+echo ""
+echo "=== FRIBIDI NATIVE FILE ==="
+cat "$DEPS_DIR/fribidi-native.ini"
+
+echo ""
+echo "=== MESON ENVIRONMENT ==="
+env | grep -E '^(CC|CXX|AR|RANLIB|STRIP|SDKROOT)=' || true
 
 MESON_DEBUG=1 meson setup \
     "$FRIBIDI_BUILD" \
