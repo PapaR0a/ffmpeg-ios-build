@@ -220,38 +220,69 @@ checkout_repo \
     "v1.0.16"
 
 FRIBIDI_DIR="$DEPS_DIR/fribidi"
+FRIBIDI_BUILD="$FRIBIDI_DIR/build-ios"
 
-cd "$FRIBIDI_DIR"
+rm -rf "$FRIBIDI_BUILD"
 
-if [ -f autogen.sh ]; then
-    ./autogen.sh
-fi
+cat > "$DEPS_DIR/fribidi-ios.ini" <<EOF
+[binaries]
+c = '$CC'
+cpp = '$CXX'
+ar = '$AR'
+strip = '$STRIP'
+ranlib = '$RANLIB'
+pkgconfig = '$(which pkg-config)'
 
-make distclean >/dev/null 2>&1 || true
+[host_machine]
+system = 'darwin'
+cpu_family = 'aarch64'
+cpu = 'arm64'
+endian = 'little'
 
-HOST_SDK="$(xcrun --sdk macosx --show-sdk-path)"
+[properties]
+needs_exe_wrapper = true
 
-env \
-    SDKROOT="$HOST_SDK" \
-    ./configure \
-    --build=x86_64-apple-darwin \
-    --host=arm-apple-darwin \
+[built-in options]
+c_args = [
+    '-arch', '$ARCH',
+    '-isysroot', '$SDK',
+    '-miphoneos-version-min=$MIN_IOS_VERSION',
+    '-fPIC'
+]
+
+cpp_args = [
+    '-arch', '$ARCH',
+    '-isysroot', '$SDK',
+    '-miphoneos-version-min=$MIN_IOS_VERSION',
+    '-fPIC'
+]
+
+c_link_args = [
+    '-arch', '$ARCH',
+    '-isysroot', '$SDK',
+    '-miphoneos-version-min=$MIN_IOS_VERSION'
+]
+
+cpp_link_args = [
+    '-arch', '$ARCH',
+    '-isysroot', '$SDK',
+    '-miphoneos-version-min=$MIN_IOS_VERSION'
+]
+EOF
+
+meson setup "$FRIBIDI_BUILD" \
+    "$FRIBIDI_DIR" \
+    --cross-file "$DEPS_DIR/fribidi-ios.ini" \
     --prefix="$INSTALL_DIR" \
-    CC="$CC" \
-    AR="$AR" \
-    RANLIB="$RANLIB" \
-    STRIP="$STRIP" \
-    CFLAGS="$CFLAGS" \
-    LDFLAGS="$LDFLAGS" \
-    --enable-static \
-    --disable-shared \
-    --disable-tools \
-    --disable-docs \
-    ac_cv_prog_cc_cross=yes \
-    ac_cv_func_malloc_0_nonnull=yes
+    --libdir=lib \
+    -Ddefault_library=static \
+    -Ddocs=false \
+    -Dbin=false \
+    -Dtests=false
 
-make -j1
-make install
+meson compile -C "$FRIBIDI_BUILD" --verbose
+
+meson install -C "$FRIBIDI_BUILD"
 
 if [ ! -f "$INSTALL_DIR/lib/libfribidi.a" ]; then
     echo "ERROR: FriBidi build failed."
