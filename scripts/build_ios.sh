@@ -639,6 +639,7 @@ echo "============================================================"
     --disable-shared \
     --enable-pic \
     \
+    --disable-avdevice \
     --enable-avformat \
     --enable-avcodec \
     --enable-avfilter \
