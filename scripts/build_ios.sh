@@ -229,20 +229,24 @@ fi
 
 make distclean >/dev/null 2>&1 || true
 
-./configure \
-    --build="$(uname -m)-apple-darwin" \
+HOST_SDK="$(xcrun --sdk macosx --show-sdk-path)"
+
+env \
+    SDKROOT="$HOST_SDK" \
+    ./configure \
+    --build=x86_64-apple-darwin \
     --host=arm-apple-darwin \
     --prefix="$INSTALL_DIR" \
     CC="$CC" \
     AR="$AR" \
     RANLIB="$RANLIB" \
     STRIP="$STRIP" \
-    \
+    CFLAGS="$CFLAGS" \
+    LDFLAGS="$LDFLAGS" \
     --enable-static \
     --disable-shared \
     --disable-tools \
     --disable-docs \
-    \
     ac_cv_prog_cc_cross=yes \
     ac_cv_func_malloc_0_nonnull=yes
 
