@@ -292,12 +292,6 @@ ar = '$HOST_AR'
 strip = '$HOST_STRIP'
 ranlib = '$HOST_RANLIB'
 pkg-config = '$HOST_PKG_CONFIG'
-
-[host_machine]
-system = 'darwin'
-cpu_family = 'aarch64'
-cpu = 'arm64'
-endian = 'little'
 EOF
 
 echo ""
@@ -366,6 +360,12 @@ cat "$DEPS_DIR/fribidi-native.ini"
 echo ""
 echo "=== MESON ENVIRONMENT ==="
 env | grep -E '^(CC|CXX|AR|RANLIB|STRIP|SDKROOT)=' || true
+
+export CC_FOR_BUILD="$HOST_CLANG"
+export CXX_FOR_BUILD="$HOST_CLANGXX"
+export AR_FOR_BUILD="$HOST_AR"
+export RANLIB_FOR_BUILD="$HOST_RANLIB"
+export STRIP_FOR_BUILD="$HOST_STRIP"
 
 MESON_DEBUG=1 meson setup \
     "$FRIBIDI_BUILD" \
