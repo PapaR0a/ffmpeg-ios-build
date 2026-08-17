@@ -222,10 +222,11 @@ checkout_repo \
 echo ""
 echo "Patching FriBidi Meson generator targets..."
 
-python3 - <<'PY'
+python3 - "$DEPS_DIR/fribidi/gen.tab/meson.build" <<'PY'
+import sys
 from pathlib import Path
 
-path = Path("dependencies/fribidi/gen.tab/meson.build")
+path = Path(sys.argv[1])
 text = path.read_text()
 
 old = """    c_args: native_args,
