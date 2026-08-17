@@ -181,7 +181,7 @@ make distclean >/dev/null 2>&1 || true
     --without-png \
     --without-harfbuzz
 
-make -j"$(sysctl -n hw.ncpu)"
+make -j1
 make install
 
 if [ ! -f "$INSTALL_DIR/lib/libfreetype.a" ]; then
@@ -220,7 +220,7 @@ make distclean >/dev/null 2>&1 || true
     --disable-tools \
     --disable-docs
 
-make -j"$(sysctl -n hw.ncpu)"
+make -j1
 make install
 
 if [ ! -f "$INSTALL_DIR/lib/libfribidi.a" ]; then
@@ -354,7 +354,7 @@ make distclean >/dev/null 2>&1 || true
     --disable-profile \
     --enable-harfbuzz
 
-make -j"$(sysctl -n hw.ncpu)"
+make -j1
 make install
 
 if [ ! -f "$INSTALL_DIR/lib/libass.a" ]; then
@@ -534,7 +534,7 @@ echo "============================================================"
 echo " Building FFmpeg"
 echo "============================================================"
 
-make -j"$(sysctl -n hw.ncpu)"
+make -j1
 
 make install
 
