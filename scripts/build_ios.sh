@@ -765,18 +765,23 @@ APPLE_LIBTOOL="$(xcrun --sdk iphoneos -f libtool)"
 echo ""
 echo "Checking subtitle symbols..."
 
-if ! nm -g "$UNIFIED_LIB" | grep -q "ass_library_init"; then
+NM_OUTPUT="$UNIFIED_DIR/unified-nm.txt"
+
+nm -g "$UNIFIED_LIB" > "$NM_OUTPUT"
+
+if grep -q "ass_library_init" "$NM_OUTPUT"; then
+    echo "OK: libass symbols present"
+else
     echo "ERROR: libass symbols were not found in unified library."
     exit 1
 fi
 
-if ! nm -g "$UNIFIED_LIB" | grep -q "FT_Init_FreeType"; then
+if grep -q "FT_Init_FreeType" "$NM_OUTPUT"; then
+    echo "OK: FreeType symbols present"
+else
     echo "ERROR: FreeType symbols were not found in unified library."
     exit 1
 fi
-
-echo "OK: libass symbols present"
-echo "OK: FreeType symbols present"
 
 echo ""
 echo "Unified library:"
