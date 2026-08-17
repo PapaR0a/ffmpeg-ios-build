@@ -220,45 +220,23 @@ checkout_repo \
     "v1.0.16"
 
 echo ""
-echo "Patching FriBidi Meson generator targets..."
+echo "Inspecting FriBidi Meson generator targets..."
 
-python3 - "$DEPS_DIR/fribidi/gen.tab/meson.build" <<'PY'
-import sys
-from pathlib import Path
+echo ""
+echo "============================================================"
+echo " FriBidi gen.tab/meson.build"
+echo "============================================================"
 
-path = Path(sys.argv[1])
-text = path.read_text()
+cat "$DEPS_DIR/fribidi/gen.tab/meson.build"
 
-old = """    c_args: native_args,
-    install: false)"""
+echo ""
+echo "============================================================"
+echo " FriBidi generator targets"
+echo "============================================================"
 
-new = """    c_args: native_args,
-    install: false,
-    native: true)"""
-
-if old not in text:
-    raise SystemExit(
-        "ERROR: Could not find gen-unicode-version generator block"
-    )
-
-text = text.replace(old, new, 1)
-
-old = """        c_args: native_args,
-        install: false)"""
-
-new = """        c_args: native_args,
-        install: false,
-        native: true)"""
-
-if old not in text:
-    raise SystemExit(
-        "ERROR: Could not find packtab generator block"
-    )
-
-text = text.replace(old, new, 1)
-
-path.write_text(text)
-PY
+grep -n -A15 -B5 \
+    -E "executable|gen-unicode|packtab|native" \
+    "$DEPS_DIR/fribidi/gen.tab/meson.build"
 
 echo ""
 echo "FriBidi generator definitions:"
