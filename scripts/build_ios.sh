@@ -281,6 +281,35 @@ echo "============================================================"
 cat "$DEPS_DIR/fribidi-native.ini"
 
 echo ""
+echo "============================================================"
+echo " Testing native Meson compiler directly"
+echo "============================================================"
+
+echo "CC environment:"
+echo "${CC:-<not set>}"
+
+echo ""
+echo "Native clang path:"
+echo "$HOST_CLANG"
+
+echo ""
+echo "Native clang exists:"
+test -x "$HOST_CLANG" && echo "YES" || echo "NO"
+
+echo ""
+echo "Native clang compile test:"
+echo 'int main(void) { return 0; }' > "$DEPS_DIR/native-test.c"
+
+"$HOST_CLANG" \
+    -isysroot "$(xcrun --sdk macosx --show-sdk-path)" \
+    "$DEPS_DIR/native-test.c" \
+    -o "$DEPS_DIR/native-test"
+
+"$DEPS_DIR/native-test"
+
+echo "Native compiler executable test: OK"
+
+echo ""
 echo "Native clang:"
 xcrun --sdk macosx -f clang
 echo ""
@@ -292,10 +321,11 @@ echo ""
 echo "Native compiler test:"
 "$(xcrun --sdk macosx -f clang)" --version
 
-meson setup "$FRIBIDI_BUILD" \
+MESON_DEBUG=1 meson setup \
+    "$FRIBIDI_BUILD" \
     "$FRIBIDI_DIR" \
-    --cross-file "$DEPS_DIR/fribidi-ios.ini" \
     --native-file "$DEPS_DIR/fribidi-native.ini" \
+    --cross-file "$DEPS_DIR/fribidi-ios.ini" \
     --prefix="$INSTALL_DIR" \
     --libdir=lib \
     -Ddefault_library=static \
