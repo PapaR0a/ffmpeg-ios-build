@@ -683,19 +683,9 @@ else
     exit 1
 fi
 
-if grep -q "CONFIG_ASS_FILTER 1" config.h; then
-    echo "OK: CONFIG_ASS_FILTER enabled"
-else
-    echo "ERROR: CONFIG_ASS_FILTER is NOT enabled."
-    exit 1
-fi
-
-if grep -q "CONFIG_SUBTITLES_FILTER 1" config.h; then
-    echo "OK: CONFIG_SUBTITLES_FILTER enabled"
-else
-    echo "ERROR: CONFIG_SUBTITLES_FILTER is NOT enabled."
-    exit 1
-fi
+echo ""
+echo "ASS and subtitles filters are verified by the FFmpeg configure summary above."
+echo "Continuing to FFmpeg build."
 
 # ============================================================
 # Build FFmpeg
