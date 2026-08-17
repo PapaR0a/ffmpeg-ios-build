@@ -219,7 +219,9 @@ checkout_repo \
     "https://github.com/fribidi/fribidi.git" \
     "v1.0.16"
 
-cd "$DEPS_DIR/fribidi"
+FRIBIDI_DIR="$DEPS_DIR/fribidi"
+
+cd "$FRIBIDI_DIR"
 
 if [ -f autogen.sh ]; then
     ./autogen.sh
@@ -231,10 +233,18 @@ make distclean >/dev/null 2>&1 || true
     --build="$(uname -m)-apple-darwin" \
     --host=arm-apple-darwin \
     --prefix="$INSTALL_DIR" \
+    CC="$CC" \
+    AR="$AR" \
+    RANLIB="$RANLIB" \
+    STRIP="$STRIP" \
+    \
     --enable-static \
     --disable-shared \
     --disable-tools \
-    --disable-docs
+    --disable-docs \
+    \
+    ac_cv_prog_cc_cross=yes \
+    ac_cv_func_malloc_0_nonnull=yes
 
 make -j1
 make install
@@ -243,6 +253,8 @@ if [ ! -f "$INSTALL_DIR/lib/libfribidi.a" ]; then
     echo "ERROR: FriBidi build failed."
     exit 1
 fi
+
+echo "OK: FriBidi built successfully."
 
 # ============================================================
 # HarfBuzz
