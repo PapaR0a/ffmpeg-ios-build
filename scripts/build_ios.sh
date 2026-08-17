@@ -221,10 +221,31 @@ checkout_repo \
 
 echo ""
 echo "============================================================"
-echo " FriBidi generator source"
+echo " Patching FriBidi native compiler detection"
 echo "============================================================"
 
-sed -n '20,90p' "$DEPS_DIR/fribidi/gen.tab/meson.build"
+python3 - "$DEPS_DIR/fribidi/gen.tab/meson.build" <<'PY'
+import sys
+from pathlib import Path
+
+path = Path(sys.argv[1])
+text = path.read_text()
+
+old = "native_cc = meson.get_compiler('c')"
+new = "native_cc = meson.get_compiler('c', native: true)"
+
+if old not in text:
+    raise SystemExit(
+        "ERROR: FriBidi native compiler line was not found"
+    )
+
+text = text.replace(old, new, 1)
+path.write_text(text)
+PY
+
+echo "FriBidi native compiler line:"
+grep -n "native_cc = meson.get_compiler" \
+    "$DEPS_DIR/fribidi/gen.tab/meson.build"
 
 FRIBIDI_DIR="$DEPS_DIR/fribidi"
 FRIBIDI_BUILD="$FRIBIDI_DIR/build-ios"
@@ -281,6 +302,18 @@ echo "============================================================"
 cat "$DEPS_DIR/fribidi-native.ini"
 
 echo ""
+echo "Native clang:"
+xcrun --sdk macosx -f clang
+echo ""
+
+echo "Native clang++:"
+xcrun --sdk macosx -f clang++
+echo ""
+
+echo "Native compiler test:"
+"$(xcrun --sdk macosx -f clang)" --version
+
+echo ""
 echo "============================================================"
 echo " Testing native Meson compiler directly"
 echo "============================================================"
@@ -308,18 +341,6 @@ echo 'int main(void) { return 0; }' > "$DEPS_DIR/native-test.c"
 "$DEPS_DIR/native-test"
 
 echo "Native compiler executable test: OK"
-
-echo ""
-echo "Native clang:"
-xcrun --sdk macosx -f clang
-echo ""
-
-echo "Native clang++:"
-xcrun --sdk macosx -f clang++
-echo ""
-
-echo "Native compiler test:"
-"$(xcrun --sdk macosx -f clang)" --version
 
 MESON_DEBUG=1 meson setup \
     "$FRIBIDI_BUILD" \
