@@ -164,36 +164,46 @@ checkout_repo \
     "https://github.com/freetype/freetype.git" \
     "VER-2-13-3"
 
-cd "$DEPS_DIR/freetype"
+FREETYPE_DIR="$DEPS_DIR/freetype"
+FREETYPE_BUILD="$FREETYPE_DIR/build-ios"
 
-./autogen.sh
+rm -rf "$FREETYPE_BUILD"
 
-make distclean >/dev/null 2>&1 || true
+cmake -S "$FREETYPE_DIR" \
+    -B "$FREETYPE_BUILD" \
+    -G Ninja \
+    \
+    -DCMAKE_SYSTEM_NAME=iOS \
+    -DCMAKE_OSX_SYSROOT="$SDK" \
+    -DCMAKE_OSX_ARCHITECTURES="$ARCH" \
+    -DCMAKE_OSX_DEPLOYMENT_TARGET="$MIN_IOS_VERSION" \
+    \
+    -DCMAKE_C_COMPILER="$CC" \
+    -DCMAKE_CXX_COMPILER="$CXX" \
+    \
+    -DCMAKE_C_FLAGS="-arch $ARCH -isysroot $SDK -miphoneos-version-min=$MIN_IOS_VERSION -fPIC" \
+    \
+    -DCMAKE_CXX_FLAGS="-arch $ARCH -isysroot $SDK -miphoneos-version-min=$MIN_IOS_VERSION -fPIC" \
+    \
+    -DCMAKE_INSTALL_PREFIX="$INSTALL_DIR" \
+    \
+    -DBUILD_SHARED_LIBS=OFF \
+    -DFT_DISABLE_ZLIB=TRUE \
+    -DFT_DISABLE_BZIP2=TRUE \
+    -DFT_DISABLE_PNG=TRUE \
+    -DFT_DISABLE_HARFBUZZ=TRUE \
+    -DCMAKE_BUILD_TYPE=Release
 
-CC_BUILD="$(xcrun --sdk macosx -f clang)"
-CFLAGS_BUILD="-O2"
+cmake --build "$FREETYPE_BUILD" --parallel 1
 
-./configure \
-    --build="$(uname -m)-apple-darwin" \
-    --host=arm-apple-darwin \
-    --prefix="$INSTALL_DIR" \
-    CC="$CC" \
-    CC_BUILD="$CC_BUILD" \
-    CFLAGS_BUILD="$CFLAGS_BUILD" \
-    --enable-static \
-    --disable-shared \
-    --without-zlib \
-    --without-bzip2 \
-    --without-png \
-    --without-harfbuzz
-
-make -j1
-make install
+cmake --install "$FREETYPE_BUILD"
 
 if [ ! -f "$INSTALL_DIR/lib/libfreetype.a" ]; then
     echo "ERROR: FreeType build failed."
     exit 1
 fi
+
+echo "OK: FreeType built successfully."
 
 # ============================================================
 # FriBidi
