@@ -665,7 +665,7 @@ echo "============================================================"
     --enable-filter=transpose \
     \
     --enable-libass \
-    --enable-libfreetype \
+    --enable-libfreetype
 
 # ============================================================
 # Verify FFmpeg configuration
