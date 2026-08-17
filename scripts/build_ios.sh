@@ -753,7 +753,6 @@ APPLE_LIBTOOL="$(xcrun --sdk iphoneos -f libtool)"
     "$INSTALL_DIR/ffmpeg/lib/libavfilter.a" \
     "$INSTALL_DIR/ffmpeg/lib/libavutil.a" \
     "$INSTALL_DIR/ffmpeg/lib/libswresample.a" \
-    "$INSTALL_DIR/ffmpeg/lib/libswscale.a" \
     \
     "$INSTALL_DIR/lib/libass.a" \
     "$INSTALL_DIR/lib/libfreetype.a" \
