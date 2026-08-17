@@ -638,6 +638,7 @@ echo "============================================================"
     --enable-static \
     --disable-shared \
     --enable-pic \
+    --disable-metal \
     \
     --disable-avdevice \
     --enable-avformat \
