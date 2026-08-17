@@ -243,31 +243,10 @@ endian = 'little'
 needs_exe_wrapper = true
 
 [built-in options]
-c_args = [
-    '-arch', '$ARCH',
-    '-isysroot', '$SDK',
-    '-miphoneos-version-min=$MIN_IOS_VERSION',
-    '-fPIC'
-]
-
-cpp_args = [
-    '-arch', '$ARCH',
-    '-isysroot', '$SDK',
-    '-miphoneos-version-min=$MIN_IOS_VERSION',
-    '-fPIC'
-]
-
-c_link_args = [
-    '-arch', '$ARCH',
-    '-isysroot', '$SDK',
-    '-miphoneos-version-min=$MIN_IOS_VERSION'
-]
-
-cpp_link_args = [
-    '-arch', '$ARCH',
-    '-isysroot', '$SDK',
-    '-miphoneos-version-min=$MIN_IOS_VERSION'
-]
+c_args = ['-arch', '$ARCH', '-isysroot', '$SDK', '-miphoneos-version-min=$MIN_IOS_VERSION', '-fPIC']
+cpp_args = ['-arch', '$ARCH', '-isysroot', '$SDK', '-miphoneos-version-min=$MIN_IOS_VERSION', '-fPIC']
+c_link_args = ['-arch', '$ARCH', '-isysroot', '$SDK', '-miphoneos-version-min=$MIN_IOS_VERSION']
+cpp_link_args = ['-arch', '$ARCH', '-isysroot', '$SDK', '-miphoneos-version-min=$MIN_IOS_VERSION']
 EOF
 
 meson setup "$FRIBIDI_BUILD" \
@@ -328,35 +307,10 @@ endian = 'little'
 needs_exe_wrapper = true
 
 [built-in options]
-c_args = [
-    '-arch', '$ARCH',
-    '-isysroot', '$SDK',
-    '-miphoneos-version-min=$MIN_IOS_VERSION',
-    '-I$INSTALL_DIR/include'
-]
-
-cpp_args = [
-    '-arch', '$ARCH',
-    '-isysroot', '$SDK',
-    '-miphoneos-version-min=$MIN_IOS_VERSION',
-    '-I$INSTALL_DIR/include'
-]
-
-c_link_args = [
-    '-arch', '$ARCH',
-    '-isysroot', '$SDK',
-    '-miphoneos-version-min=$MIN_IOS_VERSION',
-    '-L$INSTALL_DIR/lib',
-    '-miphoneos-version-min=$MIN_IOS_VERSION'
-]
-
-cpp_link_args = [
-    '-arch', '$ARCH',
-    '-isysroot', '$SDK',
-    '-miphoneos-version-min=$MIN_IOS_VERSION',
-    '-L$INSTALL_DIR/lib',
-    '-miphoneos-version-min=$MIN_IOS_VERSION'
-]
+c_args = ['-arch', '$ARCH', '-isysroot', '$SDK', '-miphoneos-version-min=$MIN_IOS_VERSION', '-I$INSTALL_DIR/include', '-fPIC']
+cpp_args = ['-arch', '$ARCH', '-isysroot', '$SDK', '-miphoneos-version-min=$MIN_IOS_VERSION', '-I$INSTALL_DIR/include', '-fPIC']
+c_link_args = ['-arch', '$ARCH', '-isysroot', '$SDK', '-miphoneos-version-min=$MIN_IOS_VERSION', '-L$INSTALL_DIR/lib']
+cpp_link_args = ['-arch', '$ARCH', '-isysroot', '$SDK', '-miphoneos-version-min=$MIN_IOS_VERSION', '-L$INSTALL_DIR/lib']
 EOF
 
 meson setup "$HARFBUZZ_BUILD" \
