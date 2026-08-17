@@ -221,57 +221,6 @@ checkout_repo \
 
 echo ""
 echo "============================================================"
-echo " Patching FriBidi native compiler support"
-echo "============================================================"
-
-python3 - "$DEPS_DIR/fribidi/meson.build" <<'PY2'
-import sys
-from pathlib import Path
-
-path = Path(sys.argv[1])
-text = path.read_text()
-
-marker = "project('fribidi', 'c', version: '1.0.16',"
-
-if "add_languages('c', native: true)" in text:
-    print("FriBidi native C language support already present.")
-    sys.exit(0)
-
-if marker not in text:
-    raise SystemExit(
-        "ERROR: Could not find FriBidi project declaration."
-    )
-
-text = text.replace(
-    marker,
-    marker,
-    1
-)
-
-project_end = "  meson_version : '>= 0.54')"
-
-if project_end not in text:
-    raise SystemExit(
-        "ERROR: Could not find end of FriBidi project declaration."
-    )
-
-text = text.replace(
-    project_end,
-    project_end + "\n\nadd_languages('c', native: true)",
-    1
-)
-
-path.write_text(text)
-
-print("FriBidi native C language support added.")
-PY2
-
-echo ""
-echo "FriBidi project declaration:"
-sed -n '1,30p' "$DEPS_DIR/fribidi/meson.build"
-
-echo ""
-echo "============================================================"
 echo " Patching FriBidi native compiler detection"
 echo "============================================================"
 
@@ -335,6 +284,8 @@ HOST_STRIP="$(xcrun --sdk macosx -f strip)"
 HOST_RANLIB="$(xcrun --sdk macosx -f ranlib)"
 HOST_PKG_CONFIG="$(which pkg-config)"
 
+HOST_MACOS_SDK="$(xcrun --sdk macosx --show-sdk-path)"
+
 cat > "$DEPS_DIR/fribidi-native.ini" <<EOF
 [binaries]
 c = '$HOST_CLANG'
@@ -343,6 +294,12 @@ ar = '$HOST_AR'
 strip = '$HOST_STRIP'
 ranlib = '$HOST_RANLIB'
 pkg-config = '$HOST_PKG_CONFIG'
+
+[built-in options]
+c_args = ['-isysroot', '$HOST_MACOS_SDK']
+cpp_args = ['-isysroot', '$HOST_MACOS_SDK']
+c_link_args = ['-isysroot', '$HOST_MACOS_SDK']
+cpp_link_args = ['-isysroot', '$HOST_MACOS_SDK']
 EOF
 
 echo ""
@@ -418,7 +375,6 @@ export AR_FOR_BUILD="$HOST_AR"
 export RANLIB_FOR_BUILD="$HOST_RANLIB"
 export STRIP_FOR_BUILD="$HOST_STRIP"
 
-SDKROOT="$(xcrun --sdk macosx --show-sdk-path)" \
 MESON_DEBUG=1 meson setup \
     "$FRIBIDI_BUILD" \
     "$FRIBIDI_DIR" \
@@ -431,8 +387,10 @@ MESON_DEBUG=1 meson setup \
     -Dbin=false \
     -Dtests=false
 
+SDKROOT="$HOST_MACOS_SDK" \
 meson compile -C "$FRIBIDI_BUILD" --verbose
 
+SDKROOT="$HOST_MACOS_SDK" \
 meson install -C "$FRIBIDI_BUILD"
 
 if [ ! -f "$INSTALL_DIR/lib/libfribidi.a" ]; then
