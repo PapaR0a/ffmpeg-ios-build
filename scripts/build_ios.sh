@@ -418,6 +418,7 @@ export AR_FOR_BUILD="$HOST_AR"
 export RANLIB_FOR_BUILD="$HOST_RANLIB"
 export STRIP_FOR_BUILD="$HOST_STRIP"
 
+SDKROOT="$(xcrun --sdk macosx --show-sdk-path)" \
 MESON_DEBUG=1 meson setup \
     "$FRIBIDI_BUILD" \
     "$FRIBIDI_DIR" \
