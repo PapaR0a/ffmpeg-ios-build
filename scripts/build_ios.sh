@@ -249,15 +249,41 @@ c_link_args = ['-arch', '$ARCH', '-isysroot', '$SDK', '-miphoneos-version-min=$M
 cpp_link_args = ['-arch', '$ARCH', '-isysroot', '$SDK', '-miphoneos-version-min=$MIN_IOS_VERSION']
 EOF
 
+HOST_CLANG="$(xcrun --sdk macosx -f clang)"
+HOST_CLANGXX="$(xcrun --sdk macosx -f clang++)"
+HOST_AR="$(xcrun --sdk macosx -f ar)"
+HOST_STRIP="$(xcrun --sdk macosx -f strip)"
+HOST_RANLIB="$(xcrun --sdk macosx -f ranlib)"
+HOST_PKG_CONFIG="$(which pkg-config)"
+
 cat > "$DEPS_DIR/fribidi-native.ini" <<EOF
 [binaries]
-c = '$(xcrun --sdk macosx -f clang)'
-cpp = '$(xcrun --sdk macosx -f clang++)'
-ar = '$(xcrun --sdk macosx -f ar)'
-strip = '$(xcrun --sdk macosx -f strip)'
-ranlib = '$(xcrun --sdk macosx -f ranlib)'
-pkg-config = '$(which pkg-config)'
+c = '$HOST_CLANG'
+cpp = '$HOST_CLANGXX'
+ar = '$HOST_AR'
+strip = '$HOST_STRIP'
+ranlib = '$HOST_RANLIB'
+pkg-config = '$HOST_PKG_CONFIG'
 EOF
+
+echo ""
+echo "============================================================"
+echo " FriBidi native machine file"
+echo "============================================================"
+
+cat "$DEPS_DIR/fribidi-native.ini"
+
+echo ""
+echo "Native clang:"
+xcrun --sdk macosx -f clang
+echo ""
+
+echo "Native clang++:"
+xcrun --sdk macosx -f clang++
+echo ""
+
+echo "Native compiler test:"
+"$(xcrun --sdk macosx -f clang)" --version
 
 meson setup "$FRIBIDI_BUILD" \
     "$FRIBIDI_DIR" \
