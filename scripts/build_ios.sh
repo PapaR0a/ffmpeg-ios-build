@@ -714,8 +714,7 @@ for LIB in \
     libavformat.a \
     libavfilter.a \
     libavutil.a \
-    libswresample.a \
-    libswscale.a
+    libswresample.a
 do
 
     if [ ! -f "$INSTALL_DIR/ffmpeg/lib/$LIB" ]; then
