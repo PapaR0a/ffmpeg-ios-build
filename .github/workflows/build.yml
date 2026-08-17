@@ -5,24 +5,114 @@ on:
 
 jobs:
   build:
+    name: Build FFmpeg iOS ARM64
     runs-on: macos-latest
 
     steps:
-      - name: Checkout repo
+
+      # ============================================================
+      # Checkout
+      # ============================================================
+
+      - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
-      - name: Install dependencies
+      # ============================================================
+      # Build environment
+      # ============================================================
+
+      - name: Show build environment
         run: |
-          brew install nasm yasm pkg-config freetype libass
+          echo "=============================================="
+          echo "Build environment"
+          echo "=============================================="
 
-      - name: Make script executable
-        run: chmod +x scripts/build_ios.sh
+          echo ""
+          echo "macOS:"
+          sw_vers
 
-      - name: Run build
-        run: ./scripts/build_ios.sh
+          echo ""
+          echo "Xcode:"
+          xcodebuild -version
 
-      - name: Upload artifact
+          echo ""
+          echo "SDK:"
+          xcrun --sdk iphoneos --show-sdk-path
+
+          echo ""
+          echo "Architecture:"
+          uname -m
+
+      # ============================================================
+      # Dependencies / build tools
+      # ============================================================
+
+      - name: Install build tools
+        run: |
+          brew update
+
+          brew install \
+            nasm \
+            yasm \
+            pkg-config \
+            autoconf \
+            automake \
+            libtool \
+            cmake \
+            meson \
+            ninja \
+            perl
+
+      # ============================================================
+      # Build
+      # ============================================================
+
+      - name: Make build script executable
+        run: |
+          chmod +x scripts/build_ios.sh
+
+      - name: Build FFmpeg
+        run: |
+          ./scripts/build_ios.sh
+
+      # ============================================================
+      # Verify
+      # ============================================================
+
+      - name: Verify XCFramework
+        run: |
+          echo "=============================================="
+          echo "XCFramework verification"
+          echo "=============================================="
+
+          test -d output/ffmpeg.xcframework
+
+          echo ""
+          echo "XCFramework contents:"
+          find output/ffmpeg.xcframework -maxdepth 3 -type f | sort
+
+          echo ""
+          echo "Binary:"
+          file output/ffmpeg.xcframework/ios-arm64/libffmpeg_device.a
+
+      # ============================================================
+      # Package
+      # ============================================================
+
+      - name: Package XCFramework
+        run: |
+          cd output
+          zip -r ffmpeg-ios.zip ffmpeg.xcframework
+
+      # ============================================================
+      # Upload
+      # ============================================================
+
+      - name: Upload FFmpeg XCFramework
         uses: actions/upload-artifact@v4
         with:
           name: ffmpeg-ios
-          path: ffmpeg.xcframework
+          path: output/ffmpeg-ios.zip
+          if-no-files-found: error
